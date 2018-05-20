@@ -1,0 +1,8 @@
+{
+    "name": "Kube Config",
+    "description": "Switches kube config context",
+    "uuid": "kube_config@vvbogdanov87.gmail.com",
+    "shell-version": [
+        "3.28.2"
+    ]
+}
