@@ -15,7 +15,7 @@ const KubePopupMenuItem = new Lang.Class({
 
         if( this.selected == true ) {
             this.icon = new St.Icon({
-                icon_name: 'kubernetes-logo',
+                icon_name: 'ball',
                 style_class: 'system-status-icon',
                 icon_size: 16
             });

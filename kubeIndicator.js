@@ -13,7 +13,7 @@ const KubeIndicator = new Lang.Class({
         this.parent(null, "Kube");
         
         this.icon = new St.Icon({
-            icon_name: 'kubernetes-logo',
+            icon_name: 'logo',
             style_class: 'system-status-icon'
         });
         this.actor.add_actor(this.icon);
