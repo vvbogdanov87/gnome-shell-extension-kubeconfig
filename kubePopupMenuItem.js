@@ -1,6 +1,7 @@
 const Lang = imports.lang;
 const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
+const GLib = imports.gi.GLib;
 
 const KubePopupMenuItem = new Lang.Class({
 	Name: 'PopupMenuItem',
@@ -26,5 +27,17 @@ const KubePopupMenuItem = new Lang.Class({
 		this.box.add(this.label);
         
         this.actor.add_child(this.box);
+
+        this.connect("activate", Lang.bind(this, function(){
+            let path = GLib.get_home_dir() + "/.kube/config";
+            try {
+                let contents = String(GLib.file_get_contents(path)[1]);
+                let re = new RegExp('current-context:\\s(.+)','gm');
+                contents = contents.replace(re,'current-context: '+this.text.trim());
+                GLib.file_set_contents(path, contents);
+            } catch (e) {
+                log('gnome-shell-extension-kubeconfig',e);
+            }
+        }));
 	},
 });

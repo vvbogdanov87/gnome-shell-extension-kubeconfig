@@ -19,5 +19,10 @@ const KubeIndicator = new Lang.Class({
         this.actor.add_actor(this.icon);
 
         this.setMenu(new KubePopupMenu.KubePopupMenu(this.actor, 0.25, St.Side.TOP));
+        
+        this.actor.connect("button-press-event", Lang.bind(this, this.update));
+    },
+    update: function() {
+        this.menu.update();
     }
 });
