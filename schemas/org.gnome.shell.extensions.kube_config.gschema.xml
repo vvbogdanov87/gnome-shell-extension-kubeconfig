@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schemalist gettext-domain="gnome-shell-extensions">
+	<schema path="/org/gnome/shell/extensions/kube-config/" id="org.gnome.shell.extensions.kube-config">
+		<key type="b" name="show-current-context">
+            <default>false</default>
+            <summary>Show current contest</summary>
+            <description></description>
+        </key>
+	</schema>
+</schemalist>
