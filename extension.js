@@ -9,7 +9,7 @@ function init(extensionMeta) {
 }
 
 function enable() {
-    Kube = new KubeIndicator.KubeIndicator();
+    let Kube = new KubeIndicator.KubeIndicator();
     Main.panel.addToStatusArea("Kube", Kube);
 }
 

@@ -3,7 +3,7 @@ const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const GLib = imports.gi.GLib;
 
-const KubePopupMenuItem = new Lang.Class({
+var KubePopupMenuItem = new Lang.Class({
 	Name: 'PopupMenuItem',
 	Extends: PopupMenu.PopupBaseMenuItem,
 
