@@ -4,6 +4,7 @@
     "uuid": "kube_config@vvbogdanov87.gmail.com",
     "settings-schema": "org.gnome.shell.extensions.kube-config",
     "shell-version": [
-        "3.28.2"
+        "3.28.2",
+        "3.30"
     ]
 }

@@ -6,12 +6,13 @@ const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const Shell = imports.gi.Shell;
+const ByteArray = imports.byteArray;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 const Convenience = Me.imports.lib.convenience;
 
-const KubeIndicator = new Lang.Class({
+var KubeIndicator = new Lang.Class({
     Name: "Kube",
     Extends: PanelMenu.Button,
 
@@ -40,7 +41,7 @@ const KubeIndicator = new Lang.Class({
     _update: function() {
         this.menu.removeAll()
         try {
-            let contents = String(GLib.file_get_contents(this.kcPath)[1]);
+            let contents = ByteArray.toString(GLib.file_get_contents(this.kcPath)[1]);
             let re = new RegExp('current-context:\\s(.+)','gm');
             let match = re.exec(contents);
             let currentContext = '';
@@ -84,7 +85,6 @@ const KubeIndicator = new Lang.Class({
 
     _setView: function() {
         this.actor.remove_all_children();
-        log('gnome-shell-extension-kubeconfig',"_setView");
         if ( this._settings.get_boolean('show-current-context') == false ){
             this.icon = new St.Icon({
                 icon_name: 'logo',
