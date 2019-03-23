@@ -2,6 +2,7 @@
     "name": "Kube Config",
     "description": "Switches kube config context",
     "uuid": "kube_config@vvbogdanov87.gmail.com",
+    "url": "https://github.com/vvbogdanov87/gnome-shell-extension-kubeconfig",
     "settings-schema": "org.gnome.shell.extensions.kube-config",
     "shell-version": [
         "3.28.2",
