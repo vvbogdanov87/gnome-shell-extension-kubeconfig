@@ -52,14 +52,14 @@ var KubeIndicator = new Lang.Class({
                 }
             }
 
-            re = new RegExp('-\\scontext:\\n.*\\n.*\\n.*name:\\s(.*)','gm');
+            re = new RegExp('-\\scontext:(\\n.*){1,4}name:\\s(.*)','gm');
             match = re.exec(contents);
             while (match != null) {
                 let curr = false;
-                if (match[1]==currentContext){
+                if (match[2]==currentContext){
                     curr = true;
                 }
-                this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(match[1],curr));         
+                this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(match[2],curr));         
                 match = re.exec(contents);
             }
 
