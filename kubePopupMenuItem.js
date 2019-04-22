@@ -3,22 +3,19 @@ const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const GLib = imports.gi.GLib;
 
-var KubePopupMenuItem = new Lang.Class({
-	Name: 'PopupMenuItem',
-	Extends: PopupMenu.PopupBaseMenuItem,
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const Gio = imports.gi.Gio;
 
-	_init: function(text, selected, params) {
-		this.parent(params);
+var KubePopupMenuItem = class extends PopupMenu.PopupBaseMenuItem {
+    constructor(text,selected, params) {
+        super(params);
 		this.text = text;
-		this.selected = selected;
+        this.selected = selected;
 		this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
 
         if( this.selected == true ) {
-            this.icon = new St.Icon({
-                icon_name: 'ball',
-                style_class: 'system-status-icon',
-                icon_size: 16
-            });
+            let gicon = Gio.icon_new_for_string( Me.path + '/icons/ball.svg' );
+            this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon', icon_size: 16 });
             this.box.add(this.icon);
             this.text = " " + this.text
         }
@@ -39,5 +36,5 @@ var KubePopupMenuItem = new Lang.Class({
                 log('gnome-shell-extension-kubeconfig',e);
             }
         }));
-	},
-});
+	}
+};
