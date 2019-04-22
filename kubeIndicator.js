@@ -7,17 +7,15 @@ const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const Shell = imports.gi.Shell;
 const ByteArray = imports.byteArray;
+const GObject = imports.gi.GObject;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 const Convenience = Me.imports.lib.convenience;
 
-var KubeIndicator = new Lang.Class({
-    Name: "Kube",
-    Extends: PanelMenu.Button,
-
-    _init: function(metadata, params) {
-        this.parent(null, "Kube");
+var KubeIndicator = GObject.registerClass (class KubeIndicator extends PanelMenu.Button {
+    _init() {
+        super._init(null, "Kube");
         this._settings = Convenience.getSettings();
         this.kcPath = GLib.get_home_dir() + "/.kube/config";
 
@@ -30,15 +28,15 @@ var KubeIndicator = new Lang.Class({
         this._monitor.connect('changed', Lang.bind(this, this._update));
 
         this._bindSettingsChanges();
-    },
+    }
 
-    _onChange: function(m, f, of, eventType) {
+    _onChange(m, f, of, eventType) {
         if (eventType == Gio.FileMonitorEvent.CHANGED){
             this._update()
         }
-    },
+    }
 
-    _update: function() {
+    _update() {
         this.menu.removeAll()
         try {
             let contents = ByteArray.toString(GLib.file_get_contents(this.kcPath)[1]);
@@ -81,15 +79,13 @@ var KubeIndicator = new Lang.Class({
         } catch (e) {
             log('gnome-shell-extension-kubeconfig',e);
         }
-    },
+    }
 
-    _setView: function() {
+    _setView() {
         this.actor.remove_all_children();
         if ( this._settings.get_boolean('show-current-context') == false ){
-            this.icon = new St.Icon({
-                icon_name: 'logo',
-                style_class: 'system-status-icon'
-            });
+            let gicon = Gio.icon_new_for_string( Me.path + '/icons/logo.svg' );
+            this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
             this.actor.add_actor(this.icon);
         } else {
             this.label = new St.Label({ text: _("kubectl"),
@@ -97,9 +93,9 @@ var KubeIndicator = new Lang.Class({
             this.actor.add_actor(this.label);
         }
         this._update();
-    },
+    }
 
-    _bindSettingsChanges: function() {
+    _bindSettingsChanges() {
         this._settings.connect('changed::show-current-context',Lang.bind(this, function() {
             this._setView();
         }));
