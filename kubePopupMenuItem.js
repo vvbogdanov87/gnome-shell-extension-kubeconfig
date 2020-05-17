@@ -2,13 +2,15 @@ const Lang = imports.lang;
 const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const GLib = imports.gi.GLib;
+const GObject = imports.gi.GObject;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Gio = imports.gi.Gio;
 
-var KubePopupMenuItem = class extends PopupMenu.PopupBaseMenuItem {
-    constructor(text,selected, params) {
-        super(params);
+var KubePopupMenuItem = GObject.registerClass ({GTypeName: 'KubePopupMenuItem'},
+    class extends PopupMenu.PopupBaseMenuItem {
+        _init(text,selected, params) {
+        super._init(params);
 		this.text = text;
         this.selected = selected;
 		this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
@@ -37,4 +39,4 @@ var KubePopupMenuItem = class extends PopupMenu.PopupBaseMenuItem {
             }
         }));
 	}
-};
+});
