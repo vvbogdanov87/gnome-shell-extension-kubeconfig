@@ -13,14 +13,15 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 const Convenience = Me.imports.lib.convenience;
 
-var KubeIndicator = GObject.registerClass (class KubeIndicator extends PanelMenu.Button {
+var KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
+    class KubeIndicator extends PanelMenu.Button {
     _init() {
         super._init(null, "Kube");
         this._settings = Convenience.getSettings();
         this.kcPath = GLib.get_home_dir() + "/.kube/config";
 
         this.setMenu(new PopupMenu.PopupMenu(this.actor, 0.25, St.Side.TOP));
-        
+
         this._setView()
 
         let kcFile = Gio.File.new_for_path(this.kcPath);
@@ -57,7 +58,7 @@ var KubeIndicator = GObject.registerClass (class KubeIndicator extends PanelMenu
                 if (match[2]==currentContext){
                     curr = true;
                 }
-                this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(match[2],curr));         
+                this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(match[2],curr));
                 match = re.exec(contents);
             }
 
@@ -68,7 +69,7 @@ var KubeIndicator = GObject.registerClass (class KubeIndicator extends PanelMenu
             this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
             this._menu_settings.connect("activate", function(){
                 // call gnome settings tool for this extension
-                let app = Shell.AppSystem.get_default().lookup_app("gnome-shell-extension-prefs.desktop");
+                let app = Shell.AppSystem.get_default().lookup_app("org.gnome.Extensions.desktop");
                 if( app!=null ) {
                     let info = app.get_app_info();
                     let timestamp = global.display.get_current_time_roundtrip();
