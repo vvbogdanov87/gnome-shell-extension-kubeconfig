@@ -11,8 +11,9 @@ function init() {
 }
 
 function option() {
-    let hBox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL});
-    let hbLabel = new Gtk.Label({label: "show current context", xalign: 0});
+    let hBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+
+    let hbLabel = new Gtk.Label({ label: "show current context " });
     let hbSwitch = new Gtk.Switch();
 
     settings.bind('show-current-context',
@@ -20,17 +21,22 @@ function option() {
         'active',
         Gio.SettingsBindFlags.DEFAULT);
 
-    hBox.pack_start(hbLabel,false, false, 0);
-    hBox.pack_end(hbSwitch,false, false, 0);
-    
+    hBox.append(hbLabel);
+    hBox.append(hbSwitch);
+
     return hBox;
 }
 
 function buildPrefsWidget() {
-	let window = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, border_width: 10 });
-    window.add(option())
+    let window = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
+    window.set_margin_top(20);
+    window.set_margin_bottom(20);
+    window.set_margin_start(20);
+    window.set_margin_end(20);
 
-    window.show_all();
+    window.append(option())
 
-	return window;
+    window.show();
+
+    return window;
 }

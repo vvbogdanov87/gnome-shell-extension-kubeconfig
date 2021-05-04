@@ -3,8 +3,10 @@ const Main = imports.ui.main;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const KubeIndicator = Me.imports.kubeIndicator;
 
+let Kube;
+
 function enable() {
-    let Kube = new KubeIndicator.KubeIndicator();
+    Kube = new KubeIndicator.KubeIndicator();
     Main.panel.addToStatusArea("Kube", Kube);
 }
 
