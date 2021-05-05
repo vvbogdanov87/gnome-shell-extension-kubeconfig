@@ -34,9 +34,7 @@ function buildPrefsWidget() {
     window.set_margin_start(20);
     window.set_margin_end(20);
 
-    window.append(option())
-
-    window.show();
+    window.append(option());
 
     return window;
 }
