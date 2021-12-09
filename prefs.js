@@ -1,13 +1,14 @@
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const Convenience = Me.imports.lib.convenience;
+
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
 let settings;
 
 function init() {
-    settings = Convenience.getSettings();
+    settings = ExtensionUtils.getSettings();
 }
 
 function option() {

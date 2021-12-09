@@ -9,15 +9,15 @@ const Shell = imports.gi.Shell;
 const ByteArray = imports.byteArray;
 const GObject = imports.gi.GObject;
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
-const Convenience = Me.imports.lib.convenience;
 
-var KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
+const KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
     class KubeIndicator extends PanelMenu.Button {
     _init() {
         super._init(null, "Kube");
-        this._settings = Convenience.getSettings();
+        this._settings = ExtensionUtils.getSettings();
         this.kcPath = GLib.get_home_dir() + "/.kube/config";
 
         this.setMenu(new PopupMenu.PopupMenu(this.actor, 0.25, St.Side.TOP));
