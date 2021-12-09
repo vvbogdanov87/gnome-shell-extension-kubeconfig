@@ -3,6 +3,7 @@ const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
+const byteArray = imports.byteArray;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Gio = imports.gi.Gio;
@@ -32,7 +33,7 @@ const KubePopupMenuItem = GObject.registerClass ({GTypeName: 'KubePopupMenuItem'
             try {
                 const file = Gio.File.new_for_path(path);
                 const [_, buffer] = file.load_contents(null);
-                let contents = new TextDecoder().decode(buffer);
+                let contents = byteArray.toString(buffer);
 
                 const re = new RegExp('current-context:\\s(.+)','gm');
                 contents = contents.replace(re, `current-context: ${this.text.trim()}`);
