@@ -6,6 +6,7 @@
     "settings-schema": "org.gnome.shell.extensions.kube-config",
     "shell-version": [
         "40",
-        "41"
+        "41",
+        "42"
     ]
 }
