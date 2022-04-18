@@ -8,7 +8,7 @@ const byteArray = imports.byteArray;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Gio = imports.gi.Gio;
 
-const KubePopupMenuItem = GObject.registerClass ({GTypeName: 'KubePopupMenuItem'},
+var KubePopupMenuItem = GObject.registerClass ({GTypeName: 'KubePopupMenuItem'},
     class extends PopupMenu.PopupBaseMenuItem {
         _init(text,selected, params) {
         super._init(params);

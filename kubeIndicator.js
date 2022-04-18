@@ -13,7 +13,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 
-const KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
+var KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
     class KubeIndicator extends PanelMenu.Button {
     _init() {
         super._init(null, "Kube");
