@@ -13,7 +13,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 
-var KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
+const KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
     class KubeIndicator extends PanelMenu.Button {
     _init() {
         super._init(null, "Kube");
@@ -64,7 +64,7 @@ var KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
 
             // add seperator to popup menu
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            
+
             // add link to settings dialog
             this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
             this._menu_settings.connect("activate", function(){
