@@ -8,7 +8,6 @@ const Me = ExtensionUtils.getCurrentExtension();
 let settings;
 
 function init() {
-    settings = ExtensionUtils.getSettings();
 }
 
 function option() {
@@ -29,6 +28,8 @@ function option() {
 }
 
 function buildPrefsWidget() {
+    settings = ExtensionUtils.getSettings();
+
     let window = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
     window.set_margin_top(20);
     window.set_margin_bottom(20);

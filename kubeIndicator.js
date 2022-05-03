@@ -12,6 +12,7 @@ const GObject = imports.gi.GObject;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
+const Util = imports.misc.util;
 
 const KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
     class KubeIndicator extends PanelMenu.Button {
@@ -68,13 +69,7 @@ const KubeIndicator = GObject.registerClass ({GTypeName: 'KubeIndicator'},
             // add link to settings dialog
             this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
             this._menu_settings.connect("activate", function(){
-                // call gnome settings tool for this extension
-                let app = Shell.AppSystem.get_default().lookup_app("org.gnome.Extensions.desktop");
-                if( app!=null ) {
-                    let info = app.get_app_info();
-                    let timestamp = global.display.get_current_time_roundtrip();
-                    info.launch_uris([Me.uuid], global.create_app_launch_context(timestamp, -1));
-                }
+                Util.spawn(["gnome-shell-extension-prefs", "kube_config@vvbogdanov87.gmail.com"]);
             });
             this.menu.addMenuItem(this._menu_settings);
         } catch (e) {
