@@ -7,13 +7,17 @@ EXTRA_MODULES = kubeIndicator.js kubePopupMenuItem.js prefs.js
 
 clean:
 	rm -rf _build
+	rm -f ./schemas/gschemas.compiled
 
 install: build
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
 	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)
 	cp -r ./_build/* $(INSTALLBASE)/$(INSTALLNAME)/
 
-build:
+compile-schemas:
+	glib-compile-schemas ./schemas/
+
+build: compile-schemas
 	rm -rf ./_build
 	mkdir _build
 	cp $(BASE_MODULES) $(EXTRA_MODULES) _build
