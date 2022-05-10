@@ -1,0 +1,1 @@
+# This is [yaml.js](https://github.com/jeremyfa/yaml.js) lib adopted to be used in Gnome extension.

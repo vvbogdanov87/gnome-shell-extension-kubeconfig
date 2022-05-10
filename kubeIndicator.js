@@ -11,6 +11,7 @@ const GObject = imports.gi.GObject;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
+const YAML = Me.imports.lib.yaml.Yaml.Yaml;
 const Util = imports.misc.util;
 
 const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
@@ -41,25 +42,16 @@ const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
             this.menu.removeAll()
             try {
                 let contents = ByteArray.toString(GLib.file_get_contents(this.kcPath)[1]);
-                let re = new RegExp('current-context:\\s(.+)', 'gm');
-                let match = re.exec(contents);
-                let currentContext = '';
-                if (match != null) {
-                    currentContext = match[1];
-                    if (this._settings.get_boolean('show-current-context') == true) {
-                        this.label.text = currentContext;
-                    }
+                const config = YAML.parse(contents);
+                let currentContext = config['current-context'];
+
+                if (this._settings.get_boolean('show-current-context') == true) {
+                    this.label.text = currentContext;
                 }
 
-                re = new RegExp('-\\scontext:(\\n.*){1,4}name:\\s(.*)', 'gm');
-                match = re.exec(contents);
-                while (match != null) {
-                    let curr = false;
-                    if (match[2] == currentContext) {
-                        curr = true;
-                    }
-                    this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(match[2], curr));
-                    match = re.exec(contents);
+                for (let i in config.contexts) {
+                    const context = config.contexts[i].name;
+                    this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(context, context == currentContext));
                 }
 
                 // add seperator to popup menu
