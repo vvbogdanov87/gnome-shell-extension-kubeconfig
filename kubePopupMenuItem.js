@@ -7,7 +7,7 @@ const byteArray = imports.byteArray;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Gio = imports.gi.Gio;
 
-const KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
+var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
     class extends PopupMenu.PopupBaseMenuItem {
         _init(text, selected, params) {
             super._init(params);
@@ -25,7 +25,7 @@ const KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem'
             this.label = new St.Label({ text: this.text });
             this.box.add(this.label);
 
-            this.actor.add_child(this.box);
+            this.add_child(this.box);
 
             this.connect("activate", () => {
                 const path = GLib.build_filenamev([GLib.get_home_dir(), "/.kube/config"]);

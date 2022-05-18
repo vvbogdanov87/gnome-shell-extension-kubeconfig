@@ -13,14 +13,12 @@ const Me = ExtensionUtils.getCurrentExtension();
 const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
 const Util = imports.misc.util;
 
-const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
+var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
         _init() {
             super._init(null, "Kube");
             this._settings = ExtensionUtils.getSettings();
             this.kcPath = GLib.get_home_dir() + "/.kube/config";
-
-            this.setMenu(new PopupMenu.PopupMenu(this.actor, 0.25, St.Side.TOP));
 
             this._setView()
 
@@ -77,17 +75,17 @@ const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
         }
 
         _setView() {
-            this.actor.remove_all_children();
+            this.remove_all_children();
             if (this._settings.get_boolean('show-current-context') == false) {
                 let gicon = Gio.icon_new_for_string(Me.path + '/icons/logo.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
-                this.actor.add_actor(this.icon);
+                this.add_actor(this.icon);
             } else {
                 this.label = new St.Label({
                     text: _("kubectl"),
                     y_align: Clutter.ActorAlign.CENTER
                 });
-                this.actor.add_actor(this.label);
+                this.add_actor(this.label);
             }
             this._update();
         }
