@@ -1,16 +1,13 @@
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
 
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-
-let settings;
 
 function init() {
 }
 
-function option() {
+function option(settings) {
     let hBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
 
     let hbLabel = new Gtk.Label({ label: "show current context " });
@@ -28,7 +25,7 @@ function option() {
 }
 
 function buildPrefsWidget() {
-    settings = ExtensionUtils.getSettings();
+    let settings = ExtensionUtils.getSettings();
 
     let window = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
     window.set_margin_top(20);
@@ -36,7 +33,7 @@ function buildPrefsWidget() {
     window.set_margin_start(20);
     window.set_margin_end(20);
 
-    window.append(option());
+    window.append(option(settings));
 
     return window;
 }

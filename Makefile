@@ -23,6 +23,7 @@ build: compile-schemas
 	cp $(BASE_MODULES) $(EXTRA_MODULES) _build
 	cp -r schemas _build
 	cp -r icons _build
+	cp -r lib _build
 
 package: build
 	cd _build ; \
