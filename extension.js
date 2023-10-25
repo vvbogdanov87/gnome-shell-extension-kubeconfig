@@ -1,16 +1,17 @@
-const Main = imports.ui.main;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { KubeIndicator } from './kubeIndicator.js';
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const KubeIndicator = Me.imports.kubeIndicator;
+export default class KubeConfigExtension extends Extension {
+    enable() {
+        this._settings = this.getSettings();
+        this.kube = new KubeIndicator();
+        Main.panel.addToStatusArea("Kube", this.kube);
+    }
 
-let Kube;
-
-function enable() {
-    Kube = new KubeIndicator.KubeIndicator();
-    Main.panel.addToStatusArea("Kube", Kube);
-}
-
-function disable() {
-    Kube.destroy();
-    Kube = null;
+    disable() {
+        this.kube.destroy();
+        this.kube = null;
+        this._settings = null;
+    }
 }
