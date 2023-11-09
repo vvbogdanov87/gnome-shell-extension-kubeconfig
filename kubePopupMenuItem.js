@@ -1,13 +1,13 @@
-const St = imports.gi.St;
-const PopupMenu = imports.ui.popupMenu;
-const GLib = imports.gi.GLib;
-const GObject = imports.gi.GObject;
-const byteArray = imports.byteArray;
+import St from 'gi://St';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+const ByteArray = imports.byteArray;
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const Gio = imports.gi.Gio;
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import Gio from 'gi://Gio';
 
-var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
+export var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
     class extends PopupMenu.PopupBaseMenuItem {
         _init(text, selected, params) {
             super._init(params);
@@ -16,7 +16,8 @@ var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' }
             this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
 
             if (this.selected == true) {
-                let gicon = Gio.icon_new_for_string(Me.path + '/icons/ball.svg');
+                let extensionObject = Extension.lookupByUUID('kube_config@vvbogdanov87.gmail.com');
+                let gicon = Gio.icon_new_for_string(extensionObject.path + '/icons/ball.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon', icon_size: 16 });
                 this.box.add(this.icon);
                 this.text = " " + this.text
@@ -32,7 +33,7 @@ var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' }
                 try {
                     const file = Gio.File.new_for_path(path);
                     const [_, buffer] = file.load_contents(null);
-                    let contents = byteArray.toString(buffer);
+                    let contents = ByteArray.toString(buffer);
 
                     const re = new RegExp('current-context:\\s(.+)', 'gm');
                     contents = contents.replace(re, `current-context: ${this.text.trim()}`);

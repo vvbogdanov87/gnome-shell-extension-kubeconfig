@@ -1,39 +1,34 @@
-const Gtk = imports.gi.Gtk;
-const Gio = imports.gi.Gio;
+import Gio from 'gi://Gio';
+import Adw from 'gi://Adw';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-function init() {
+export default class KubeConfigExtensionPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        // Create a preferences page, with a single group
+        const page = new Adw.PreferencesPage({
+            title: _('General'),
+            icon_name: 'dialog-information-symbolic',
+        });
+        window.add(page);
+
+        const group = new Adw.PreferencesGroup({
+            title: _('Appearance'),
+            description: _('Configure the appearance of the extension'),
+        });
+        page.add(group);
+
+        // Create a new preferences row
+        const row = new Adw.SwitchRow({
+            title: _('Show current context'),
+            subtitle: _('Whether to show the current kubernetes context'),
+        });
+        group.add(row);
+
+        // Create a settings object and bind the row to the `show-current-context` key
+        window._settings = this.getSettings();
+        window._settings.bind('show-current-context', row, 'active',
+            Gio.SettingsBindFlags.DEFAULT);
+    }
 }
 
-function option(settings) {
-    let hBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
-
-    let hbLabel = new Gtk.Label({ label: "show current context " });
-    let hbSwitch = new Gtk.Switch();
-
-    settings.bind('show-current-context',
-        hbSwitch,
-        'active',
-        Gio.SettingsBindFlags.DEFAULT);
-
-    hBox.append(hbLabel);
-    hBox.append(hbSwitch);
-
-    return hBox;
-}
-
-function buildPrefsWidget() {
-    let settings = ExtensionUtils.getSettings();
-
-    let window = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
-    window.set_margin_top(20);
-    window.set_margin_bottom(20);
-    window.set_margin_start(20);
-    window.set_margin_end(20);
-
-    window.append(option(settings));
-
-    return window;
-}

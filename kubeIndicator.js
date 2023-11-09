@@ -1,24 +1,25 @@
-const St = imports.gi.St;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const Clutter = imports.gi.Clutter;
-const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-const Shell = imports.gi.Shell;
+import St from 'gi://St';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+// import Shell from 'gi://shell';
 const ByteArray = imports.byteArray;
-const GObject = imports.gi.GObject;
+import GObject from 'gi://GObject';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const KubePopupMenuItem = Me.imports.kubePopupMenuItem;
-const YAML = Me.imports.lib.yaml.Yaml.Yaml;
-const Util = imports.misc.util;
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { KubePopupMenuItem } from './kubePopupMenuItem.js';
+import { Yaml } from './lib/yaml/Yaml.js';
 
-var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
+import * as Util from 'resource:///org/gnome/shell/misc/util.js';
+
+export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
         _init() {
             super._init(null, "Kube");
-            this._settings = ExtensionUtils.getSettings();
+            let extensionObject = Extension.lookupByUUID('kube_config@vvbogdanov87.gmail.com');
+            this._settings = extensionObject.getSettings();
             this.kcPath = GLib.get_home_dir() + "/.kube/config";
 
             this._setView()
@@ -40,7 +41,7 @@ var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
             this.menu.removeAll()
             try {
                 let contents = ByteArray.toString(GLib.file_get_contents(this.kcPath)[1]);
-                const config = YAML.parse(contents);
+                const config = Yaml.parse(contents);
                 let currentContext = config['current-context'];
 
                 if (this._settings.get_boolean('show-current-context') == true) {
@@ -49,7 +50,7 @@ var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
 
                 for (let i in config.contexts) {
                     const context = config.contexts[i].name;
-                    this.menu.addMenuItem(new KubePopupMenuItem.KubePopupMenuItem(context, context == currentContext));
+                    this.menu.addMenuItem(new KubePopupMenuItem(context, context == currentContext));
                 }
 
                 // add seperator to popup menu
@@ -69,7 +70,8 @@ var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
         _setView() {
             this.remove_all_children();
             if (this._settings.get_boolean('show-current-context') == false) {
-                let gicon = Gio.icon_new_for_string(Me.path + '/icons/logo.svg');
+                let extensionObject = Extension.lookupByUUID('kube_config@vvbogdanov87.gmail.com');
+                let gicon = Gio.icon_new_for_string(extensionObject.path + '/icons/logo.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
                 this.add_actor(this.icon);
             } else {
