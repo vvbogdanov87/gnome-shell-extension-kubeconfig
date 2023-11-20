@@ -2,7 +2,6 @@ import St from 'gi://St';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-const ByteArray = imports.byteArray;
 
 import Gio from 'gi://Gio';
 
@@ -32,7 +31,7 @@ export var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenu
                 try {
                     const file = Gio.File.new_for_path(path);
                     const [_, buffer] = file.load_contents(null);
-                    let contents = ByteArray.toString(buffer);
+                    let contents = TextDecoder().decode(buffer);
 
                     const re = new RegExp('current-context:\\s(.+)', 'gm');
                     contents = contents.replace(re, `current-context: ${this.text.trim()}`);

@@ -4,8 +4,6 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-// import Shell from 'gi://shell';
-const ByteArray = imports.byteArray;
 import GObject from 'gi://GObject';
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
@@ -37,7 +35,7 @@ export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
         _update() {
             this.menu.removeAll()
             try {
-                let contents = ByteArray.toString(GLib.file_get_contents(this.kcPath)[1]);
+                let contents = TextDecoder().decode(GLib.file_get_contents(this.kcPath)[1]);
                 const config = Yaml.parse(contents);
                 let currentContext = config['current-context'];
 
