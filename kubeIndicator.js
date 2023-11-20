@@ -8,7 +8,6 @@ import Gio from 'gi://Gio';
 const ByteArray = imports.byteArray;
 import GObject from 'gi://GObject';
 
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
 import { Yaml } from './lib/yaml/Yaml.js';
 
@@ -16,10 +15,10 @@ import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 
 export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
-        _init() {
+        _init(extensionObject) {
             super._init(null, "Kube");
-            let extensionObject = Extension.lookupByUUID('kube_config@vvbogdanov87.gmail.com');
-            this._settings = extensionObject.getSettings();
+            this._extensionObject = extensionObject
+            this._settings = this._extensionObject.getSettings();
             this.kcPath = GLib.get_home_dir() + "/.kube/config";
 
             this._setView()
@@ -50,7 +49,7 @@ export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
 
                 for (let i in config.contexts) {
                     const context = config.contexts[i].name;
-                    this.menu.addMenuItem(new KubePopupMenuItem(context, context == currentContext));
+                    this.menu.addMenuItem(new KubePopupMenuItem(this._extensionObject, context, context == currentContext));
                 }
 
                 // add seperator to popup menu
@@ -70,8 +69,7 @@ export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
         _setView() {
             this.remove_all_children();
             if (this._settings.get_boolean('show-current-context') == false) {
-                let extensionObject = Extension.lookupByUUID('kube_config@vvbogdanov87.gmail.com');
-                let gicon = Gio.icon_new_for_string(extensionObject.path + '/icons/logo.svg');
+                let gicon = Gio.icon_new_for_string(this._extensionObject.path + '/icons/logo.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
                 this.add_actor(this.icon);
             } else {

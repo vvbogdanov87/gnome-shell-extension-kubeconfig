@@ -5,7 +5,7 @@ import { KubeIndicator } from './kubeIndicator.js';
 export default class KubeConfigExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this.kube = new KubeIndicator();
+        this.kube = new KubeIndicator(this);
         Main.panel.addToStatusArea("Kube", this.kube);
     }
 
