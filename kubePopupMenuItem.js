@@ -5,7 +5,7 @@ import GObject from 'gi://GObject';
 
 import Gio from 'gi://Gio';
 
-export var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
+export const KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenuItem' },
     class extends PopupMenu.PopupBaseMenuItem {
         _init(extensionObject, text, selected, params) {
             super._init(params);

@@ -9,7 +9,7 @@ import GObject from 'gi://GObject';
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
 import { Yaml } from './lib/yaml/Yaml.js';
 
-export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
+export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
         _init(extensionObject) {
             super._init(null, "Kube");
