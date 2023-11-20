@@ -11,8 +11,6 @@ import GObject from 'gi://GObject';
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
 import { Yaml } from './lib/yaml/Yaml.js';
 
-import * as Util from 'resource:///org/gnome/shell/misc/util.js';
-
 export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
         _init(extensionObject) {
@@ -58,7 +56,7 @@ export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
                 // add link to settings dialog
                 this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
                 this._menu_settings.connect("activate", function () {
-                    Util.spawn(["gnome-shell-extension-prefs", "kube_config@vvbogdanov87.gmail.com"]);
+                    this._extensionObject.openPreferences();
                 });
                 this.menu.addMenuItem(this._menu_settings);
             } catch (e) {
