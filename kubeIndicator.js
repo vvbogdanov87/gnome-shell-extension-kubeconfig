@@ -35,7 +35,8 @@ export var KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
         _update() {
             this.menu.removeAll()
             try {
-                let contents = TextDecoder().decode(GLib.file_get_contents(this.kcPath)[1]);
+                const td = new TextDecoder();
+                let contents = td.decode(GLib.file_get_contents(this.kcPath)[1]);
                 const config = Yaml.parse(contents);
                 let currentContext = config['current-context'];
 

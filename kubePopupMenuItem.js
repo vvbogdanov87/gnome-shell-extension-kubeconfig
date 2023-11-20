@@ -31,7 +31,8 @@ export var KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMenu
                 try {
                     const file = Gio.File.new_for_path(path);
                     const [_, buffer] = file.load_contents(null);
-                    let contents = TextDecoder().decode(buffer);
+                    const td = new TextDecoder();
+                    let contents = td.decode(buffer);
 
                     const re = new RegExp('current-context:\\s(.+)', 'gm');
                     contents = contents.replace(re, `current-context: ${this.text.trim()}`);
