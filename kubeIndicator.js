@@ -55,9 +55,8 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
 
                 // add link to settings dialog
                 this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
-                this._menu_settings.connect("activate", () => {
-                    this._extensionObject.openPreferences();
-                });
+                this._menu_settings.connect("activate", (_item, _event) =>
+                    this._extensionObject.openPreferences());
                 this.menu.addMenuItem(this._menu_settings);
             } catch (e) {
                 log('gnome-shell-extension-kubeconfig', e);
