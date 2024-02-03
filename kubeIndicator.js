@@ -5,6 +5,7 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
+import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
 import { Yaml } from './lib/yaml/Yaml.js';
@@ -27,7 +28,7 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
         }
 
         _onChange(m, f, of, eventType) {
-            if (eventType == Gio.FileMonitorEvent.CHANGED) {
+            if (eventType === Gio.FileMonitorEvent.CHANGED) {
                 this._update()
             }
         }
@@ -40,13 +41,13 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                 const config = Yaml.parse(contents);
                 let currentContext = config['current-context'];
 
-                if (this._settings.get_boolean('show-current-context') == true) {
+                if (this._settings.get_boolean('show-current-context') === true) {
                     this.label.text = currentContext;
                 }
 
                 for (let i in config.contexts) {
                     const context = config.contexts[i].name;
-                    this.menu.addMenuItem(new KubePopupMenuItem(this._extensionObject, context, context == currentContext));
+                    this.menu.addMenuItem(new KubePopupMenuItem(this._extensionObject, context, context === currentContext));
                 }
 
                 // add seperator to popup menu
@@ -65,7 +66,7 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
 
         _setView() {
             this.remove_all_children();
-            if (this._settings.get_boolean('show-current-context') == false) {
+            if (this._settings.get_boolean('show-current-context') === false) {
                 let gicon = Gio.icon_new_for_string(this._extensionObject.path + '/icons/logo.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
                 this.add_actor(this.icon);

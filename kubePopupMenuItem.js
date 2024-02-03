@@ -13,7 +13,7 @@ export const KubePopupMenuItem = GObject.registerClass({ GTypeName: 'KubePopupMe
             this.selected = selected;
             this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
 
-            if (this.selected == true) {
+            if (this.selected === true) {
                 this._extensionObject = extensionObject
                 let gicon = Gio.icon_new_for_string(this._extensionObject.path + '/icons/ball.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon', icon_size: 16 });
