@@ -8,7 +8,8 @@ import GObject from 'gi://GObject';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
-import { Yaml } from './lib/yaml/Yaml.js';
+import { KubectlConfig } from './kubectl.js';
+
 
 export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
     class KubeIndicator extends PanelMenu.Button {
@@ -16,13 +17,28 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             super._init(null, "Kube");
             this._extensionObject = extensionObject
             this._settings = this._extensionObject.getSettings();
-            this.kcPath = GLib.get_home_dir() + "/.kube/config";
+
+            this._monitors = [];
 
             this._setView()
 
-            let kcFile = Gio.File.new_for_path(this.kcPath);
-            this._monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
-            this._monitor.connect('changed', this._update.bind(this));
+            let kConfigFiles = [];
+
+            if (GLib.getenv('KUBECONFIG') !== null) {
+                // we expect absolute paths in KUBECONFIG
+                kConfigFiles = GLib.getenv('KUBECONFIG').split(':');
+            }
+            else {
+                // monitor for default kubeconfig file.
+                kConfigFiles.push(GLib.get_home_dir() + "/.kube/config");
+            }
+
+            for (const kConfigFile of kConfigFiles) {
+                const kcFile = Gio.File.new_for_path(kConfigFile);
+                const monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
+                this._monitors.push(monitor);
+                monitor.connect('changed', this._onChange.bind(this));
+            }
 
             this._bindSettingsChanges();
         }
@@ -33,21 +49,21 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             }
         }
 
-        _update() {
-            this.menu.removeAll()
+        async _update() {
+            this.menu.removeAll();
             try {
-                const td = new TextDecoder();
-                let contents = td.decode(GLib.file_get_contents(this.kcPath)[1]);
-                const config = Yaml.parse(contents);
-                let currentContext = config['current-context'];
+                let currentContext = await KubectlConfig.getCurrentContext();
 
                 if (this._settings.get_boolean('show-current-context') === true) {
                     this.label.text = currentContext;
                 }
 
-                for (let i in config.contexts) {
-                    const context = config.contexts[i].name;
-                    this.menu.addMenuItem(new KubePopupMenuItem(this._extensionObject, context, context === currentContext));
+                const contexts = await KubectlConfig.getContexts();
+
+                for (const context of contexts) {
+                    this.menu.addMenuItem(
+                        new KubePopupMenuItem(this._extensionObject, context, context === currentContext)
+                    );
                 }
 
                 // add seperator to popup menu
@@ -59,7 +75,7 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                     this._extensionObject.openPreferences());
                 this.menu.addMenuItem(this._menu_settings);
             } catch (e) {
-                log('gnome-shell-extension-kubeconfig', e);
+                console.error(`${this._extensionObject.metadata.uuid}: ${e}`);
             }
         }
 
