@@ -52,7 +52,7 @@ export class KubectlConfig extends BaseKubectl {
      * @returns {Promise<String[]>}
      */
     static async getContexts() {
-        if (!this._kubectlInPath()) {
+        if (this._kubectlExe === null) {
             return [];
         }
 
@@ -73,8 +73,8 @@ export class KubectlConfig extends BaseKubectl {
      * @returns {Promise<string>}
      */
     static async getCurrentContext() {
-        if (!this._kubectlInPath()) {
-            return "";
+        if (this._kubectlExe === null) {
+            return [];
         }
 
         const argv = [KubectlConfig._kubectlExe, 'config', 'current-context'];
@@ -92,8 +92,8 @@ export class KubectlConfig extends BaseKubectl {
      * @param {Promise<boolean>} context
      */
     static async useContext(context) {
-        if (!this._kubectlInPath()) {
-            return false;
+        if (this._kubectlExe === null) {
+            return [];
         }
 
         const argv = [KubectlConfig._kubectlExe, 'config', 'use-context', `${context}`];
