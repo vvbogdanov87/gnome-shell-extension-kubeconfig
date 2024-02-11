@@ -74,7 +74,7 @@ export class KubectlConfig extends BaseKubectl {
      */
     static async getCurrentContext() {
         if (this._kubectlExe === null) {
-            return [];
+            return "";
         }
 
         const argv = [KubectlConfig._kubectlExe, 'config', 'current-context'];
@@ -93,7 +93,7 @@ export class KubectlConfig extends BaseKubectl {
      */
     static async useContext(context) {
         if (this._kubectlExe === null) {
-            return [];
+            return false;
         }
 
         const argv = [KubectlConfig._kubectlExe, 'config', 'use-context', `${context}`];
