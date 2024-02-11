@@ -3,7 +3,7 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import { KubectlConfig } from './kubectl.js';
+import { Kubectl } from './kubectl.js';
 
 
 export const KubePopupMenuItem = GObject.registerClass(
@@ -23,7 +23,7 @@ export const KubePopupMenuItem = GObject.registerClass(
             }
             // connect signal
             this.connect("activate", (_item, _event) => {
-                KubectlConfig.useContext(this.label.get_text());
+                Kubectl.useContext(this.label.get_text());
             });
         }
     });
