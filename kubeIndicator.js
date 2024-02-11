@@ -16,11 +16,14 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
         _init(extensionObject) {
             super._init(null, "Kube");
             this._extensionObject = extensionObject
+            this._extensionUuid = extensionObject.metadata.uuid;
             this._settings = this._extensionObject.getSettings();
 
             this._monitors = [];
 
-            this._setView()
+            this._buildMenu();
+
+            this._setView();
 
             let kConfigFiles = [];
 
@@ -49,8 +52,39 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             }
         }
 
+        _buildMenu() {
+            // contexts list section menu
+            this.contextsMenuSection = new PopupMenu.PopupMenuSection();
+            this.menu.addMenuItem(this.contextsMenuSection);
+
+            // add seperator to popup menu
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            // add actions section menu
+            const actionsSection = new PopupMenu.PopupMenuSection();
+            const actionsBox = new St.BoxLayout({ vertical: false, style_class: 'popup-menu-ornament' });
+            actionsSection.actor.add(actionsBox);
+            this.menu.addMenuItem(actionsSection);
+
+            // a space
+            actionsBox.add(new St.BoxLayout({ x_expand: true }));
+
+            // actions: add link to settings dialog
+            const settingsMenuItem = new PopupMenu.PopupMenuItem('');
+            settingsMenuItem.add_child(
+                new St.Icon({
+                    icon_name: 'emblem-system-symbolic',
+                    style_class: 'popup-menu-icon',
+                })
+            );
+            settingsMenuItem.connect("activate", (_item, _event) =>
+                this._extensionObject.openPreferences()
+            );
+            actionsBox.add(settingsMenuItem);
+        }
+
         async _update() {
-            this.menu.removeAll();
+            this.contextsMenuSection.removeAll();
             try {
                 let currentContext = await KubectlConfig.getCurrentContext();
 
@@ -61,19 +95,9 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                 const contexts = await KubectlConfig.getContexts();
 
                 for (const context of contexts) {
-                    this.menu.addMenuItem(
-                        new KubePopupMenuItem(this._extensionObject, context, context === currentContext)
-                    );
+                    const item = new KubePopupMenuItem(this._extensionObject, context, context === currentContext);
+                    this.contextsMenuSection.addMenuItem(item);
                 }
-
-                // add seperator to popup menu
-                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-                // add link to settings dialog
-                this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
-                this._menu_settings.connect("activate", (_item, _event) =>
-                    this._extensionObject.openPreferences());
-                this.menu.addMenuItem(this._menu_settings);
             } catch (e) {
                 console.error(`${this._extensionObject.metadata.uuid}: ${e}`);
             }
