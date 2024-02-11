@@ -1,0 +1,33 @@
+{
+    "name": "gnome-shell-extension-kubeconfig",
+    "version": "1.0.0",
+    "description": "Switches kube config context",
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "format": "eslint --write \"{,!(node_modules)/**/}*.{js,jsx}\"",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vvbogdanov87/gnome-shell-extension-kubeconfig.git"
+    },
+    "keywords": [
+        "gnome",
+        "extension",
+        "kubeconfig",
+        "kubectl",
+        "config",
+        "context"
+    ],
+    "author": "vvbogdanov87@gmail.com",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/vvbogdanov87/gnome-shell-extension-kubeconfig/issues"
+    },
+    "homepage": "https://github.com/vvbogdanov87/gnome-shell-extension-kubeconfig#readme",
+    "devDependencies": {
+        "eslint": "^8.56.0"
+    }
+}
