@@ -9,6 +9,7 @@ import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.j
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
 import { KubectlConfig } from './kubectl.js';
+import { throttle } from './utils.js';
 
 
 export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
@@ -36,19 +37,22 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                 kConfigFiles.push(GLib.get_home_dir() + "/.kube/config");
             }
 
+            // A throttled function listening file changes is needed because some editor save
+            // multiple times, e.g. Sublime Text, and this broke interface
+            const throttledOnKcFileChange = throttle(this._onKcFileChange.bind(this), 500);
             for (const kConfigFile of kConfigFiles) {
                 const kcFile = Gio.File.new_for_path(kConfigFile);
                 const monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
                 this._monitors.push(monitor);
-                monitor.connect('changed', this._onChange.bind(this));
+                monitor.connect('changed', (...args) => throttledOnKcFileChange(...args));
             }
 
             this._bindSettingsChanges();
         }
 
-        _onChange(m, f, of, eventType) {
+        _onKcFileChange(m, f, of, eventType) {
             if (eventType === Gio.FileMonitorEvent.CHANGED) {
-                this._update()
+                this._update();
             }
         }
 
@@ -123,5 +127,14 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             this._settings.connect('changed::show-current-context', () => {
                 this._setView();
             });
+        }
+
+        destroy() {
+            super.destroy();
+            for (const monitor of this._monitors) {
+                monitor.cancel();
+                monitor.unref();
+            }
+            this._monitors = [];
         }
     });
