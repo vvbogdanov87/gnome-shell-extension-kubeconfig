@@ -26,22 +26,6 @@ class BaseKubectl {
         // alert user on missing executable
         Main.notifyError(this._extensionUUID, _(`${this._kubectlExes.join(_(' or '))} not in PATH`));
     }
-
-    /**
-     * Check if `${this._kubectlExe}` is in PATH.
-     *
-     * Could be a decorator in future.
-     *
-     * @returns {boolean}
-     */
-    static _kubectlInPath() {
-        // ensure kubectl is installed
-        if (GLib.find_program_in_path(this._kubectlExe) === null) {
-            Main.notifyError(this._extensionUUID, _(`${this._kubectlExe} not in PATH`));
-            return false;
-        }
-        return true;
-    }
 }
 
 export class KubectlConfig extends BaseKubectl {
