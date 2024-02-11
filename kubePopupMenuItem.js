@@ -23,7 +23,7 @@ export const KubePopupMenuItem = GObject.registerClass(
             }
             // connect signal
             this.connect("activate", (_item, _event) => {
-                Kubectl.useContext(this.label.get_text());
+                KubectlConfig.useContext(this.label.get_text());
             });
         }
     });
