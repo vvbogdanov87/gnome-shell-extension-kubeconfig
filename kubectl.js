@@ -31,6 +31,48 @@ class BaseKubectl {
 export class Kubectl extends BaseKubectl {
 
     /**
+     * Get kubectl version.
+     *
+     * @param {String|undefined} context
+     * @returns {Promise<String>}
+     */
+    static async version(context) {
+        if (this._kubectlExe === null) {
+            return "";
+        }
+
+        let argv = [this._kubectlExe, `--request-timeout=3`];
+        if (!(context === null || context === undefined)) {
+            argv.push(`--context=${context}`);
+        }
+        argv.push(`version`);
+
+        try {
+            const output = await execCommunicateAsync(argv);
+            return output;
+        } catch (_e) {
+            //console.error(`${Kubectl._extensionUUID} cannot retrieve kubeconfig contexts: ${_e}`);
+            return "";
+        }
+    }
+
+    /**
+     * Check if `context` is reachable.
+     * If `context` not specified, check for current context.
+     * The kubectl version is the lightweight method to check reachability.
+     *
+     * @param {String|undefined} context
+     * @returns {Promise<String>}
+     */
+    static async clusterIsReachable(context) {
+        if (this._kubectlExe === null) {
+            return false;
+        }
+        const v = await Kubectl.version(context);
+        return v !== "";
+    }
+
+    /**
      * Get kubeconfg contexts
      *
      * @returns {Promise<String[]>}
