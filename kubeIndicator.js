@@ -8,7 +8,7 @@ import GObject from 'gi://GObject';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
-import { KubectlConfig } from './kubectl.js';
+import { Kubectl } from './kubectl.js';
 import { throttle } from './utils.js';
 
 
@@ -90,13 +90,13 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
         async _update() {
             this.contextsMenuSection.removeAll();
             try {
-                let currentContext = await KubectlConfig.getCurrentContext();
+                const currentContext = await Kubectl.getCurrentContext();
 
                 if (this._settings.get_boolean('show-current-context') === true) {
                     this.label.text = currentContext;
                 }
 
-                const contexts = await KubectlConfig.getContexts();
+                const contexts = await Kubectl.getContexts();
 
                 for (const context of contexts) {
                     const item = new KubePopupMenuItem(this._extensionObject, context, context === currentContext);
