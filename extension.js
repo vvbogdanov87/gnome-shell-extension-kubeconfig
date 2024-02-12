@@ -7,7 +7,7 @@ import { KubectlConfig } from './kubectl.js';
 
 export default class KubeConfigExtension extends Extension {
     enable() {
-        KubectlConfig.init(this);
+        KubectlConfig.init(this.metadata.uuid);
         this.kube = new KubeIndicator(this);
         Main.panel.addToStatusArea("Kube", this.kube);
     }
