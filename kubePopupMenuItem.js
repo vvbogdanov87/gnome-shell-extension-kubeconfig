@@ -5,7 +5,7 @@ import St from 'gi://St';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { Kubectl } from './kubectl.js';
-
+import { throttle } from './utils.js';
 
 export const KubePopupMenuItem = GObject.registerClass(
     {
@@ -21,8 +21,9 @@ export const KubePopupMenuItem = GObject.registerClass(
         constructor(extensionObject, text, selected, params) {
             super(text.trim(), params);
             this._extensionObject = extensionObject;
+            this._settings = this._extensionObject.getSettings();
 
-            // FIXME: How to know if item is already disposed?
+            // TODO: How to know if item is already destroyed?
             this._destroyed = false;
 
             // current context ornament
@@ -32,28 +33,52 @@ export const KubePopupMenuItem = GObject.registerClass(
             } else {
                 this.setOrnament(PopupMenu.Ornament.NONE);
             }
+
+            // connect signals
+            this.connect("activate", (_item, _event) => {
+                Kubectl.useContext(this.label.get_text());
+            });
             this.connect('destroy', this._onDestroy.bind(this));
 
             // initialize cluster status icon
             this._clusterStatusIcon = null;
             this._setClusterStatusIcon('network-error-symbolic');
 
-            // connect signal
-            this.connect("activate", (_item, _event) => {
-                Kubectl.useContext(this.label.get_text());
+            // bind settings and start cluster polling
+            this._timerid = null;
+            this._bindSettingsChanges();
+            // initial update because GLib.timeout_add_seconds call first time
+            // after interval, not immediately
+            this._updateClusterStatus().catch(e => console.error(`${this._extensionObject.uuid}: ${e}`));
+            this._restartClusterPoll();
+        }
+
+        _bindSettingsChanges() {
+            // limit too frequent updates
+            const throttledClusterPoll = throttle(this._restartClusterPoll.bind(this), 500);
+            this._settings.connect('changed::cluster-poll-interval-seconds', () => {
+                throttledClusterPoll();
             });
+        }
 
-            // update cluster status, i.e. cluster status icon
-            this._updateClusterStatus().catch(e => console.error(e));
+        _restartClusterPoll() {
+            this._stopClusterPoll();
 
-            // ... and schedule status update each 5 seconds
-            // TODO: make timer configurable in extension settings and/or
-            //       based on device power settings.
-            this._timerid = GLib.timeout_add(
+            this._timerid = GLib.timeout_add_seconds(
                 GLib.PRIORITY_DEFAULT,
-                5000,
-                () => this._updateClusterStatus().catch(e => console.error(e))
+                this._settings.get_int('cluster-poll-interval-seconds'),
+                () => this._updateClusterStatus().catch(e => console.error(`${this._extensionObject.uuid}: ${e}`))
             );
+        }
+
+        _stopClusterPoll() {
+            if (this._timerid !== null) {
+                if (GLib.source_remove(this._timerid)) {
+                    this._timerid = null;
+                } else {
+                    console.error(`${this._extensionObject.uuid}: cannot remove timer ${this._timerid}`);
+                }
+            }
         }
 
         async _updateClusterStatus() {

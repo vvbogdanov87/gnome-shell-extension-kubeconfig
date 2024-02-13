@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schemalist gettext-domain="gnome-shell-extensions">
-	<schema path="/org/gnome/shell/extensions/kube-config/" id="org.gnome.shell.extensions.kube-config">
-		<key type="b" name="show-current-context">
+    <schema path="/org/gnome/shell/extensions/kube-config/" id="org.gnome.shell.extensions.kube-config">
+        <key type="b" name="show-current-context">
             <default>false</default>
             <summary>Show current context</summary>
             <description></description>
         </key>
-	</schema>
+        <key type="i" name="cluster-poll-interval-seconds">
+            <default>5</default>
+            <summary>Seconds before next update</summary>
+            <description>This is the seconds after extension updates the cluster reachability for the context</description>
+        </key>
+    </schema>
 </schemalist>
