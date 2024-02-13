@@ -31,6 +31,8 @@ export default class KubeConfigExtensionPreferences extends ExtensionPreferences
         const maxLength = new Adw.SpinRow({
             title: _('Max currrent context length'),
             subtitle: _('0 - unlimited'),
+            lower: 0,
+            step_increment: 1,
         });
         group.add(maxLength);
         window._settings = this.getSettings();
