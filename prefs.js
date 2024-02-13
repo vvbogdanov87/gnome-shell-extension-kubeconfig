@@ -1,5 +1,6 @@
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
 
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
@@ -31,8 +32,10 @@ export default class KubeConfigExtensionPreferences extends ExtensionPreferences
         const maxLength = new Adw.SpinRow({
             title: _('Max currrent context length'),
             subtitle: _('0 - unlimited'),
-            lower: 0,
-            step_increment: 1,
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                step_increment: 1,
+              }),
         });
         group.add(maxLength);
         window._settings = this.getSettings();
