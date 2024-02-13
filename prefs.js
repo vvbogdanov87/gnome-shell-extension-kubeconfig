@@ -18,16 +18,23 @@ export default class KubeConfigExtensionPreferences extends ExtensionPreferences
         });
         page.add(group);
 
-        // Create a new preferences row
-        const row = new Adw.SwitchRow({
+        window._settings = this.getSettings();
+
+        const showCurrContext = new Adw.SwitchRow({
             title: _('Show current context'),
             subtitle: _('Whether to show the current kubernetes context'),
         });
-        group.add(row);
+        group.add(showCurrContext);
+        window._settings.bind('show-current-context', showCurrContext, 'active',
+            Gio.SettingsBindFlags.DEFAULT);
 
-        // Create a settings object and bind the row to the `show-current-context` key
+        const maxLength = new Adw.SpinRow({
+            title: _('Max currrent context length'),
+            subtitle: _('0 - unlimited'),
+        });
+        group.add(maxLength);
         window._settings = this.getSettings();
-        window._settings.bind('show-current-context', row, 'active',
+        window._settings.bind('max-current-context-lenght', maxLength, 'active',
             Gio.SettingsBindFlags.DEFAULT);
     }
 }

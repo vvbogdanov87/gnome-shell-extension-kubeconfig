@@ -55,7 +55,11 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                 let currentContext = await KubectlConfig.getCurrentContext();
 
                 if (this._settings.get_boolean('show-current-context') === true) {
-                    this.label.text = currentContext;
+                    maxCtxLen = this._settings.get_int('max-current-context-lengh');
+                    if ( maxCtxLen === 0 ) {
+                        maxCtxLen = currentContext.length
+                    }
+                    this.label.text = currentContext.slice(0, maxCtxLen);
                 }
 
                 const contexts = await KubectlConfig.getContexts();
