@@ -28,7 +28,49 @@ class BaseKubectl {
     }
 }
 
-export class KubectlConfig extends BaseKubectl {
+export class Kubectl extends BaseKubectl {
+
+    /**
+     * Get kubectl version.
+     *
+     * @param {String|undefined} context
+     * @returns {Promise<String>}
+     */
+    static async version(context) {
+        if (this._kubectlExe === null) {
+            return "";
+        }
+
+        let argv = [this._kubectlExe, `--request-timeout=3`];
+        if (!(context === null || context === undefined)) {
+            argv.push(`--context=${context}`);
+        }
+        argv.push(`version`);
+
+        try {
+            const output = await execCommunicateAsync(argv);
+            return output;
+        } catch (_e) {
+            //console.error(`${Kubectl._extensionUUID} cannot retrieve kubeconfig contexts: ${_e}`);
+            return "";
+        }
+    }
+
+    /**
+     * Check if `context` is reachable.
+     * If `context` not specified, check for current context.
+     * The kubectl version is the lightweight method to check reachability.
+     *
+     * @param {String|undefined} context
+     * @returns {Promise<String>}
+     */
+    static async clusterIsReachable(context) {
+        if (this._kubectlExe === null) {
+            return false;
+        }
+        const v = await Kubectl.version(context);
+        return v !== "";
+    }
 
     /**
      * Get kubeconfg contexts
@@ -40,7 +82,7 @@ export class KubectlConfig extends BaseKubectl {
             return [];
         }
 
-        const argv = [KubectlConfig._kubectlExe, 'config', 'get-contexts', '-oname'];
+        const argv = [this._kubectlExe, 'config', 'get-contexts', '-oname'];
         try {
             const output = await execCommunicateAsync(argv);
             const lines = output.split('\n');
@@ -61,7 +103,7 @@ export class KubectlConfig extends BaseKubectl {
             return "";
         }
 
-        const argv = [KubectlConfig._kubectlExe, 'config', 'current-context'];
+        const argv = [this._kubectlExe, 'config', 'current-context'];
         try {
             return await execCommunicateAsync(argv);
         } catch (e) {
@@ -80,7 +122,7 @@ export class KubectlConfig extends BaseKubectl {
             return false;
         }
 
-        const argv = [KubectlConfig._kubectlExe, 'config', 'use-context', `${context}`];
+        const argv = [this._kubectlExe, 'config', 'use-context', `${context}`];
         try {
             await execCommunicateAsync(argv);
             return true;
