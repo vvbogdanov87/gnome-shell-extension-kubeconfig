@@ -12,8 +12,8 @@ class BaseKubectl {
      *
      * @param {Extension} extension
      */
-    static init(extension) {
-        this._extensionUUID = extension.metadata.uuid;
+    static init(uuid) {
+        this._extensionUUID = uuid;
 
         // ensure one executable is installed
         for (const exe of this._kubectlExes) {
