@@ -67,11 +67,11 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             // add actions section menu
             const actionsSection = new PopupMenu.PopupMenuSection();
             const actionsBox = new St.BoxLayout({ vertical: false, style_class: 'popup-menu-ornament' });
-            actionsSection.actor.add(actionsBox);
+            actionsSection.actor.add_child(actionsBox);
             this.menu.addMenuItem(actionsSection);
 
             // a space
-            actionsBox.add(new St.BoxLayout({ x_expand: true }));
+            actionsBox.add_child(new St.BoxLayout({ x_expand: true }));
 
             // actions: add link to settings dialog
             const settingsMenuItem = new PopupMenu.PopupMenuItem('');
@@ -84,7 +84,7 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             settingsMenuItem.connect("activate", (_item, _event) =>
                 this._extensionObject.openPreferences()
             );
-            actionsBox.add(settingsMenuItem);
+            actionsBox.add_child(settingsMenuItem);
         }
 
         async _update() {
