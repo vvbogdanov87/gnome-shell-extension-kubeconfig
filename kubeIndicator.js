@@ -84,13 +84,13 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             if (this._settings.get_boolean('show-current-context') === false) {
                 let gicon = Gio.icon_new_for_string(this._extensionObject.path + '/icons/logo.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
-                this.add_actor(this.icon);
+                this.add_chld(this.icon);
             } else {
                 this.label = new St.Label({
                     text: _("kubectl"),
                     y_align: Clutter.ActorAlign.CENTER
                 });
-                this.add_actor(this.label);
+                this.add_child(this.label);
             }
             this._update();
         }

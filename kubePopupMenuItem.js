@@ -21,12 +21,12 @@ export const KubePopupMenuItem = GObject.registerClass(
             if (this.selected === true) {
                 let gicon = Gio.icon_new_for_string(this._extensionObject.path + '/icons/ball.svg');
                 this.icon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon', icon_size: 16 });
-                this.box.add(this.icon);
+                this.box.add_child(this.icon);
                 this.text = " " + this.text;
             }
 
             this.label = new St.Label({ text: this.text });
-            this.box.add(this.label);
+            this.box.add_child(this.label);
 
             this.add_child(this.box);
 
