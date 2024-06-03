@@ -8,7 +8,8 @@ import GObject from 'gi://GObject';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { KubePopupMenuItem } from './kubePopupMenuItem.js';
-import { KubectlConfig } from './kubectl.js';
+import { Kubectl } from './kubectl.js';
+import { throttle } from './utils.js';
 
 
 export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' },
@@ -16,11 +17,14 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
         _init(extensionObject) {
             super._init(null, "Kube");
             this._extensionObject = extensionObject
+            this._extensionUuid = extensionObject.metadata.uuid;
             this._settings = this._extensionObject.getSettings();
 
             this._monitors = [];
 
-            this._setView()
+            this._buildMenu();
+
+            this._setView();
 
             let kConfigFiles = [];
 
@@ -33,47 +37,71 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
                 kConfigFiles.push(GLib.get_home_dir() + "/.kube/config");
             }
 
+            // A throttled function listening file changes is needed because some editor save
+            // multiple times, e.g. Sublime Text, and this broke interface
+            const throttledOnKcFileChange = throttle(this._onKcFileChange.bind(this), 500);
             for (const kConfigFile of kConfigFiles) {
                 const kcFile = Gio.File.new_for_path(kConfigFile);
                 const monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
                 this._monitors.push(monitor);
-                monitor.connect('changed', this._onChange.bind(this));
+                monitor.connect('changed', (...args) => throttledOnKcFileChange(...args));
             }
 
             this._bindSettingsChanges();
         }
 
-        _onChange(m, f, of, eventType) {
+        _onKcFileChange(m, f, of, eventType) {
             if (eventType === Gio.FileMonitorEvent.CHANGED) {
-                this._update()
+                this._update();
             }
         }
 
+        _buildMenu() {
+            // contexts list section menu
+            this.contextsMenuSection = new PopupMenu.PopupMenuSection();
+            this.menu.addMenuItem(this.contextsMenuSection);
+
+            // add seperator to popup menu
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            // add actions section menu
+            const actionsSection = new PopupMenu.PopupMenuSection();
+            const actionsBox = new St.BoxLayout({ vertical: false, style_class: 'popup-menu-ornament' });
+            actionsSection.actor.add_child(actionsBox);
+            this.menu.addMenuItem(actionsSection);
+
+            // a space
+            actionsBox.add_child(new St.BoxLayout({ x_expand: true }));
+
+            // actions: add link to settings dialog
+            const settingsMenuItem = new PopupMenu.PopupMenuItem('');
+            settingsMenuItem.add_child(
+                new St.Icon({
+                    icon_name: 'emblem-system-symbolic',
+                    style_class: 'popup-menu-icon',
+                })
+            );
+            settingsMenuItem.connect("activate", (_item, _event) =>
+                this._extensionObject.openPreferences()
+            );
+            actionsBox.add_child(settingsMenuItem);
+        }
+
         async _update() {
-            this.menu.removeAll();
+            this.contextsMenuSection.removeAll();
             try {
-                let currentContext = await KubectlConfig.getCurrentContext();
+                const currentContext = await Kubectl.getCurrentContext();
 
                 if (this._settings.get_boolean('show-current-context') === true) {
                     this.label.text = currentContext;
                 }
 
-                const contexts = await KubectlConfig.getContexts();
+                const contexts = await Kubectl.getContexts();
 
                 for (const context of contexts) {
-                    this.menu.addMenuItem(
-                        new KubePopupMenuItem(this._extensionObject, context, context === currentContext)
-                    );
+                    const item = new KubePopupMenuItem(this._extensionObject, context, context === currentContext);
+                    this.contextsMenuSection.addMenuItem(item);
                 }
-
-                // add seperator to popup menu
-                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-                // add link to settings dialog
-                this._menu_settings = new PopupMenu.PopupMenuItem(_("Settings"));
-                this._menu_settings.connect("activate", (_item, _event) =>
-                    this._extensionObject.openPreferences());
-                this.menu.addMenuItem(this._menu_settings);
             } catch (e) {
                 console.error(`${this._extensionObject.metadata.uuid}: ${e}`);
             }
@@ -99,5 +127,14 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             this._settings.connect('changed::show-current-context', () => {
                 this._setView();
             });
+        }
+
+        destroy() {
+            super.destroy();
+            for (const monitor of this._monitors) {
+                monitor.cancel();
+                monitor.unref();
+            }
+            this._monitors = [];
         }
     });
