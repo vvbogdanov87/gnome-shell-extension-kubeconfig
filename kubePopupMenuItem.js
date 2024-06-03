@@ -82,6 +82,9 @@ export const KubePopupMenuItem = GObject.registerClass(
         }
 
         async _updateClusterStatus() {
+            if (this._destroyed) {
+                return;
+            }
             const status = await Kubectl.clusterIsReachable(this.label.get_text());
             if (this._destroyed) {
                 return;
@@ -99,6 +102,9 @@ export const KubePopupMenuItem = GObject.registerClass(
          * @param {String} iconName
          */
         _setClusterStatusIcon(iconName) {
+            if (this._destroyed) {
+                return;
+            }
             if (this._clusterStatusIcon === null) {
                 this._clusterStatusIcon = new St.Icon({
                     icon_name: iconName,
