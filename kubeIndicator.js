@@ -133,7 +133,6 @@ export const KubeIndicator = GObject.registerClass({ GTypeName: 'KubeIndicator' 
             super.destroy();
             for (const monitor of this._monitors) {
                 monitor.cancel();
-                monitor.unref();
             }
             this._monitors = [];
         }
